@@ -1,0 +1,43 @@
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Hosting
+@inject IWebHostEnvironment Env
+
+<!doctype html>
+<html lang="en">
+<head>
+    @if (!User.Identity?.IsAuthenticated == true && !Env.IsDevelopment())
+    {
+        <!-- Insert analytics here -->
+    }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/assets/css/style.min.css">
+
+    <title>@ViewBag.Title</title>
+
+    @RenderSection("head", required: false)
+</head>
+<body>
+    <div class="main-body">
+        @RenderBody()
+
+        <br />
+        <br />
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("script", required: false)
+</body>
+</html>

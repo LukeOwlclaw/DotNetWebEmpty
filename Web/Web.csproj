@@ -1,0 +1,93 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>aspnet-Web-9EE7A466-B96E-48AB-B952-FC02B9720839</UserSecretsId>
+    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+    <Nullable>enable</Nullable>
+    <CodeAnalysisRuleSet>$(SolutionDir)my.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DocumentationFile>$(SolutionDir)Web\bin\Web.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <!-- https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-5.0&tabs=visual-studio#prevent-publish-of-static-identity-assets -->
+  <PropertyGroup>
+    <ResolveStaticWebAssetsInputsDependsOn>RemoveIdentityAssets</ResolveStaticWebAssetsInputsDependsOn>
+  </PropertyGroup>
+
+  <!-- Only use single culture -->
+  <PropertyGroup>
+   <SatelliteResourceLanguages>de</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <Target Name="RemoveIdentityAssets">
+    <ItemGroup>
+      <StaticWebAsset Remove="@(StaticWebAsset)" Condition="%(SourceId) == 'Microsoft.AspNetCore.Identity.UI'" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.10" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.4.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.66">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Configure non-deploy items -->
+  <ItemGroup>
+    <Content Update="wwwroot\Scripts\ts\**" CopyToPublishDirectory="Never" />
+    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+    <Content Update="package*.json" CopyToPublishDirectory="Never" />
+    <Content Update="wwwroot\Scripts\ts\tsconfig.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="tsdefgen.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+  <!-- Configure all files which we want to hide in Visual Studio -->
+  <ItemGroup>
+    <Compile Remove="wwwroot\Scripts\r\**" />
+    <Content Remove="wwwroot\r\**" />
+    <Content Remove="wwwroot\Scripts\r\**" />
+    <EmbeddedResource Remove="wwwroot\Scripts\r\**" />
+    <None Remove="wwwroot\Scripts\r\**" />
+    <TypeScriptCompile Remove="wwwroot\Scripts\r\**" />
+  </ItemGroup>
+
+  <!-- Since we want to exclude .js files from within Visual Studio, for MSBuild (and all other builds) we need to include them explicitly,
+       otherwise CloudSearchWebTest will not deploy them for integration tests.
+       We can achieve this with build property $(DesignTimeBuild).
+       See https://github.com/dotnet/project-system/blob/main/docs/design-time-builds.md for details. -->
+  <ItemGroup Condition="!('$(DesignTimeBuild)' == 'true')">
+    <Content Include="wwwroot\r\**\*.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="appsettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebDatabase\Database.csproj" />
+    <ProjectReference Include="..\Shared\SharedHelpers.csproj" />
+  </ItemGroup>
+
+</Project>
